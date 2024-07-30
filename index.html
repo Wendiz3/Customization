@@ -132,27 +132,41 @@ function drawPieChart(lat, lng, data) {
 
   const pieData = data.split(', ').map(type => pieColors[type]);
 
-  const totalSlices = pieData.length;
-  const sliceAngle = (2 * Math.PI) / totalSlices;
-  const radius = 10; // Radius of the pie chart
-
-  pieData.forEach((color, i) => {
-    const startAngle = i * sliceAngle;
-    const endAngle = startAngle + sliceAngle;
-
-    const pathData = [
-      [lat, lng],
-      [lat + (radius * Math.cos(startAngle)) / 111320, lng + (radius * Math.sin(startAngle)) / (111320 * Math.cos(lat * Math.PI / 180))],
-      [lat + (radius * Math.cos(endAngle)) / 111320, lng + (radius * Math.sin(endAngle)) / (111320 * Math.cos(lat * Math.PI / 180))]
-    ];
-
-    L.polygon(pathData, {
-      color: color,
-      fillColor: color,
+  if (pieData.length === 1) {
+    // Single type, plot as a single-colored point
+    L.circleMarker([lat, lng], {
+      color: pieData[0],
+      fillColor: pieData[0],
       fillOpacity: 1,
-      weight: 1
-    }).addTo(map);
-  });
+      radius: 5
+    }).addTo(map)
+    .bindPopup(`<b>Type:</b> ${data}`);
+  } else {
+    // Multiple types, plot as pie chart
+    const totalSlices = pieData.length;
+    const sliceAngle = (2 * Math.PI) / totalSlices;
+    const radius = 0.001; // Radius of the pie chart in degrees, adjust for appropriate size
+
+    pieData.forEach((color, i) => {
+      const startAngle = i * sliceAngle;
+      const endAngle = startAngle + sliceAngle;
+
+      const pathData = [
+        [lat, lng],
+        [lat + (radius * Math.cos(startAngle)), lng + (radius * Math.sin(startAngle))],
+        [lat + (radius * Math.cos(endAngle)), lng + (radius * Math.sin(endAngle))],
+        [lat, lng] // Closing the path
+      ];
+
+      L.polygon(pathData, {
+        color: color,
+        fillColor: color,
+        fillOpacity: 1,
+        weight: 1
+      }).addTo(map)
+      .bindPopup(`<b>Type:</b> ${data}`);
+    });
+  }
 }
 
 // Add pie chart markers
