@@ -117,7 +117,7 @@
       .bindPopup(`<b>Client:</b> ${client.Client}<br><b>Department:</b> ${client.Department}<br><b>Type:</b> ${client.Type}`)
       .bindTooltip(client.Client);
     });
-
+    
     // Add legend
     const legend = L.control({ position: 'bottomright' });
     legend.onAdd = function(map) {
