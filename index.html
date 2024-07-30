@@ -129,36 +129,29 @@ function drawPieChart(lat, lng, data) {
     'Urban Forestry': 'thistle',
     'WUI WRR Plan': 'salmon'
   };
-  
+
   const pieData = data.split(', ').map(type => pieColors[type]);
 
   const totalSlices = pieData.length;
-  const startAngle = 0;
   const sliceAngle = (2 * Math.PI) / totalSlices;
-  
   const radius = 10; // Radius of the pie chart
-  const centerX = 0; // Center X relative to the marker
-  const centerY = 0; // Center Y relative to the marker
-  
-  const latLngs = pieData.map((color, i) => {
-    const angle1 = startAngle + i * sliceAngle;
-    const angle2 = angle1 + sliceAngle;
-    
-    return [
+
+  pieData.forEach((color, i) => {
+    const startAngle = i * sliceAngle;
+    const endAngle = startAngle + sliceAngle;
+
+    const pathData = [
       [lat, lng],
-      [
-        lat + Math.cos(angle1) * radius / 111320, // Convert meters to degrees for latitude
-        lng + Math.sin(angle1) * radius / (111320 * Math.cos(lat * Math.PI / 180)) // Convert meters to degrees for longitude
-      ],
-      [
-        lat + Math.cos(angle2) * radius / 111320, // Convert meters to degrees for latitude
-        lng + Math.sin(angle2) * radius / (111320 * Math.cos(lat * Math.PI / 180)) // Convert meters to degrees for longitude
-      ]
+      [lat + (radius * Math.cos(startAngle)) / 111320, lng + (radius * Math.sin(startAngle)) / (111320 * Math.cos(lat * Math.PI / 180))],
+      [lat + (radius * Math.cos(endAngle)) / 111320, lng + (radius * Math.sin(endAngle)) / (111320 * Math.cos(lat * Math.PI / 180))]
     ];
-  });
-  
-  latLngs.forEach((latLng, i) => {
-    L.polygon(latLng, { color: pieData[i], fillColor: pieData[i], fillOpacity: 1 }).addTo(map);
+
+    L.polygon(pathData, {
+      color: color,
+      fillColor: color,
+      fillOpacity: 1,
+      weight: 1
+    }).addTo(map);
   });
 }
 
